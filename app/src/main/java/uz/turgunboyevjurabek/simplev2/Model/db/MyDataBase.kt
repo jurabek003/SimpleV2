@@ -4,10 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import uz.turgunboyevjurabek.simplev2.Model.madels.User
 import kotlin.concurrent.Volatile
-
-@Database(entities = [(User::class)], version = 1, exportSchema = false)
+const val start=3
+@Database(entities = [(User::class)], version = start, exportSchema = true)
 abstract class MyDataBase:RoomDatabase() {
 
     abstract fun roomInstens():MyDao
@@ -31,7 +33,7 @@ abstract class MyDataBase:RoomDatabase() {
                         context.applicationContext,
                         MyDataBase::class.java,
                         "employee_database"
-                    ).fallbackToDestructiveMigration()
+                    )
                         .allowMainThreadQueries()
                         .build()
 

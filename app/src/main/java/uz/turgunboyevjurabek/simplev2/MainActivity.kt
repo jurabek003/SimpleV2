@@ -1,6 +1,7 @@
 package uz.turgunboyevjurabek.simplev2
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -29,11 +30,13 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uz.turgunboyevjurabek.simplev2.Model.db.MyDataBase
 import uz.turgunboyevjurabek.simplev2.Model.madels.User
+import uz.turgunboyevjurabek.simplev2.View.GetUsers
 import uz.turgunboyevjurabek.simplev2.ui.theme.SimpleV2Theme
 
 class MainActivity : ComponentActivity() {
@@ -52,51 +55,21 @@ class MainActivity : ComponentActivity() {
                     Scaffold(
                         modifier = Modifier
                             .fillMaxSize()
-                            .size(80.dp)
-                        ,
+                            .size(80.dp),
                         floatingActionButton = {
                             FloatingActionButton(
                                 onClick = {
-                                    val user=User(0,"Jurabek","Turg'unboyev","903654746")
+                                    val user=User(0,"Jo'rabek","Turg'unboyev","903654746")
                                     myDataBase.insetUser(user)
+
                             },
                             ) {
                                 Icon(imageVector = Icons.Default.Add, contentDescription = "add user")
                             }
                         },
                         content = {
-
-                            if (myDataBase.getAllUser().isNotEmpty()){
-                                val list by remember{
-                                    mutableStateOf(ArrayList<User>())
-                                }
-                                list.addAll(myDataBase.getAllUser())
-
-                                LazyColumn{
-                                    items(list.size){it->
-                                        Card(modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(100.dp)
-                                            .padding(10.dp)
-                                        ) {
-                                            Column(
-                                                Modifier
-                                                    .fillMaxSize()
-                                                    .padding(5.dp),
-                                                verticalArrangement = Arrangement.Center
-                                            ) {
-                                                Row {
-                                                    Text(text = list[it].name.toString())
-                                                    Spacer(modifier = Modifier.size(10.dp))
-                                                    Text(text = list[it].lastName.toString())
-                                                }
-                                                Text(text = list[it].number.toString())
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
+                            val context= LocalContext.current
+                            GetUsers(context = context)
                         }
                     )
                 }
