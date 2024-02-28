@@ -54,9 +54,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val myDataBase=MyDataBase.getInstance(this).roomInstens()
                     val userListState = remember { mutableStateOf<List<User>>(emptyList()) }
-                    if (myDataBase.getAllUser().isNotEmpty()){
-                        userListState.value+=myDataBase.getAllUser()
-                    }
+
 
                     LaunchedEffect(Unit){
                         val usersFromDb=myDataBase.getAllUser()
@@ -80,11 +78,11 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                         content = {
-                            Toast.makeText(this, "content", Toast.LENGTH_SHORT).show()
+
                             val context= LocalContext.current
                             GetUsers(userListState.value,context)
-                        }
 
+                        }
                     )
                 }
             }
