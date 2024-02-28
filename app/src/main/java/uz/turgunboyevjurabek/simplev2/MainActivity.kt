@@ -1,8 +1,10 @@
 package uz.turgunboyevjurabek.simplev2
 
+import GetUsers
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -36,11 +39,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uz.turgunboyevjurabek.simplev2.Model.db.MyDataBase
 import uz.turgunboyevjurabek.simplev2.Model.madels.User
-import uz.turgunboyevjurabek.simplev2.View.GetUsers
+
 import uz.turgunboyevjurabek.simplev2.ui.theme.SimpleV2Theme
 
 class MainActivity : ComponentActivity() {
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "AutoboxingStateCreation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -50,27 +53,38 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val myDataBase=MyDataBase.getInstance(this).roomInstens()
+                    val userListState = remember { mutableStateOf<List<User>>(emptyList()) }
+                    if (myDataBase.getAllUser().isNotEmpty()){
+                        userListState.value+=myDataBase.getAllUser()
+                    }
+
+                    LaunchedEffect(Unit){
+                        val usersFromDb=myDataBase.getAllUser()
+                        userListState.value=usersFromDb
+                    }
 
 
                     Scaffold(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .size(80.dp),
+                            .fillMaxSize(),
                         floatingActionButton = {
                             FloatingActionButton(
                                 onClick = {
                                     val user=User(0,"Jo'rabek","Turg'unboyev","903654746")
                                     myDataBase.insetUser(user)
+                                    userListState.value+=user
 
                             },
                             ) {
-                                Icon(imageVector = Icons.Default.Add, contentDescription = "add user")
+                                Icon(imageVector = Icons.Filled.Add, contentDescription = "add user")
                             }
                         },
                         content = {
+                            Toast.makeText(this, "content", Toast.LENGTH_SHORT).show()
                             val context= LocalContext.current
-                            GetUsers(context = context)
+                            GetUsers(userListState.value,context)
                         }
+
                     )
                 }
             }

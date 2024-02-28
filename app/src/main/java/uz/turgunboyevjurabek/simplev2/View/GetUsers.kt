@@ -1,60 +1,58 @@
-package uz.turgunboyevjurabek.simplev2.View
-
 import android.content.Context
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.*
+import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import uz.turgunboyevjurabek.simplev2.Model.db.MyDataBase
 import uz.turgunboyevjurabek.simplev2.Model.madels.User
 
 @Composable
-fun GetUsers(context: Context) {
+fun GetUsers(userList: List<User>,context: Context) {
     val myDataBase=MyDataBase.getInstance(context).roomInstens()
+    val list=myDataBase.getAllUser()
+    LazyColumn {
+        items(userList.size) { index ->
+            val user = userList[index]
+            val animateUser = remember { mutableStateOf(false) }
 
-    if (myDataBase.getAllUser().isNotEmpty()){
-        val list by remember{
-            mutableStateOf(ArrayList<User>())
-        }
-        list.addAll(myDataBase.getAllUser())
+                LaunchedEffect(user.id) {
+                    animateUser.value = true
+                }
 
-        LazyColumn{
-            items(list.size){it->
-                Card(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .padding(10.dp)
+            AnimatedVisibility(
+                visible = animateUser.value,
+                enter = slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec = tween(durationMillis = 300)
+                )
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .padding(10.dp)
                 ) {
                     Column(
-                        Modifier
+                        modifier = Modifier
                             .fillMaxSize()
                             .padding(5.dp),
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Row {
-                            Text(text = list[it].name.toString())
-                            Spacer(modifier = Modifier.size(10.dp))
-                            Text(text = list[it].lastName.toString())
-                        }
-                        Text(text = list[it].number.toString())
+                        Text(text = user.name ?: "Unknown")
+                        Spacer(modifier = Modifier.size(10.dp))
+                        Text(text = user.lastName ?: "Unknown")
+                        Spacer(modifier = Modifier.size(10.dp))
+                        Text(text = user.number ?: "Unknown")
                     }
                 }
             }
         }
     }
-
 }
