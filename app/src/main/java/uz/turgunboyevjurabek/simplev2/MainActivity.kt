@@ -55,9 +55,9 @@ class MainActivity : ComponentActivity() {
                     val myDataBase=MyDataBase.getInstance(this).roomInstens()
                     val userListState = remember { mutableStateOf<List<User>>(emptyList()) }
 
-
                     LaunchedEffect(Unit){
-                        val usersFromDb=myDataBase.getAllUser()
+                        val usersFromDb=ArrayList<User>()
+                        usersFromDb.addAll(myDataBase.getAllUser())
                         userListState.value=usersFromDb
                     }
 
@@ -80,7 +80,11 @@ class MainActivity : ComponentActivity() {
                         content = {
 
                             val context= LocalContext.current
-                            GetUsers(userListState.value,context)
+
+                            GetUsers(userListState.value,context, delete = {item ->
+
+                                myDataBase.deleteUser(item)
+                            },)
 
                         }
                     )
