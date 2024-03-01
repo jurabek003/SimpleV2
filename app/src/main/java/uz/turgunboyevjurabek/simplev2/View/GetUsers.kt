@@ -1,5 +1,4 @@
 @file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
-
 import android.content.Context
 import android.icu.text.AlphabeticIndex.Bucket.LabelType
 import android.widget.Toast
@@ -40,15 +39,13 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import uz.turgunboyevjurabek.simplev2.Model.db.MyDataBase
 import uz.turgunboyevjurabek.simplev2.Model.madels.User
-
 @Composable
 fun GetUsers(
     userList: ArrayList<User>,
     context: Context,
     delete: (item: User) -> Unit,
-
+    onClickNav: (item:User)->Unit
     ) {
-
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -56,15 +53,19 @@ fun GetUsers(
             SwipeToDeleteCointainer(item = index, onDelete = {
                 userList -= index
                 delete(index)
-            } )
+            })
             {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(80.dp)
-                        .padding(10.dp)
+                        .padding(5.dp)
                 ) {
-                    Column {
+                    Column(modifier = Modifier
+                        .fillMaxSize()
+                        .clickable {
+                            onClickNav(index)
+                        }) {
                         Text(text = index.name.toString())
                         Text(text = index.lastName.toString())
                     }
@@ -96,14 +97,12 @@ fun <T> SwipeToDeleteCointainer(
             false
         }
     })
-
     LaunchedEffect(key1 = isRemoved) {
         if (isRemoved) {
             delay(animationDuration.toLong())
             onDelete(item)
         }
     }
-
     AnimatedVisibility(
         visible = !isRemoved, exit = shrinkVertically(
             animationSpec = tween(durationMillis = animationDuration), shrinkTowards = Alignment.Top
@@ -115,15 +114,13 @@ fun <T> SwipeToDeleteCointainer(
             directions = setOf(DismissDirection.EndToStart)
         )
     }
-
 }
-
 @Composable
 fun DeleteBacround(
     swipeDismissState: DismissState,
 ) {
     val color = if (swipeDismissState.dismissDirection == DismissDirection.EndToStart) {
-        Color.Red
+        Color.Transparent
     } else {
         Color.Transparent
     }
@@ -134,7 +131,13 @@ fun DeleteBacround(
             .padding(16.dp),
         contentAlignment = Alignment.CenterEnd
     ) {
-        Icon(imageVector = Icons.Default.Delete, contentDescription = null, tint = Color.White)
+        Icon(
+            imageVector = Icons.Default.Delete,
+            contentDescription = null,
+            tint = Color.Red,
+            modifier = Modifier
+                .size(30.dp)
+        )
     }
 
 }

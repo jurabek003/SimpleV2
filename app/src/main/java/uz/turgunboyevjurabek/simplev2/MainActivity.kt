@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uz.turgunboyevjurabek.simplev2.Model.db.MyDataBase
 import uz.turgunboyevjurabek.simplev2.Model.madels.User
+import uz.turgunboyevjurabek.simplev2.View.Navigation
+import uz.turgunboyevjurabek.simplev2.View.viewScreen.MainClass
 
 import uz.turgunboyevjurabek.simplev2.ui.theme.SimpleV2Theme
 
@@ -51,39 +53,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    val myDataBase = MyDataBase.getInstance(this).roomInstens()
-                    val userListState = remember {  mutableStateOf<List<User>>(emptyList()) }
-
-                    LaunchedEffect(Unit) {
-                        userListState.value= myDataBase.getAllUser()
-                    }
-
-                    Scaffold(modifier = Modifier.fillMaxSize(), floatingActionButton = {
-                        FloatingActionButton(
-                            onClick = {
-                                val user = User(0, "Jo'rabek", "Turg'unboyev", "903654746")
-                                myDataBase.insetUser(user)
-                                userListState.value=myDataBase.getAllUser()
-                            },
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Add, contentDescription = "add user"
-                            )
-                        }
-                    }, content = {
-                        val context = LocalContext.current
-                        val list = ArrayList<User>()
-                        list.addAll(userListState.value)
-                        GetUsers(
-                            list,
-                            context,
-                            delete = { item ->
-                                myDataBase.deleteUser(item)
-                                userListState.value = myDataBase.getAllUser()
-                            },
-                        )
-
-                    })
+                    Navigation()
                 }
             }
         }
