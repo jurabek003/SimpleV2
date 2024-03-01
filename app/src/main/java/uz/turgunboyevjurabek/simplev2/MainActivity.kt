@@ -49,45 +49,41 @@ class MainActivity : ComponentActivity() {
         setContent {
             SimpleV2Theme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    val myDataBase=MyDataBase.getInstance(this).roomInstens()
-                    val userListState = remember { mutableStateOf<List<User>>(emptyList()) }
+                    val myDataBase = MyDataBase.getInstance(this).roomInstens()
+                    val userListState = remember {  mutableStateOf<List<User>>(emptyList()) }
 
-                    LaunchedEffect(Unit){
-                        val usersFromDb=ArrayList<User>()
-                        usersFromDb.addAll(myDataBase.getAllUser())
-                        userListState.value=usersFromDb
+                    LaunchedEffect(Unit) {
+                        userListState.value= myDataBase.getAllUser()
                     }
 
-
-                    Scaffold(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        floatingActionButton = {
-                            FloatingActionButton(
-                                onClick = {
-                                    val user=User(0,"Jo'rabek","Turg'unboyev","903654746")
-                                    myDataBase.insetUser(user)
-                                    userListState.value+=user
-
+                    Scaffold(modifier = Modifier.fillMaxSize(), floatingActionButton = {
+                        FloatingActionButton(
+                            onClick = {
+                                val user = User(0, "Jo'rabek", "Turg'unboyev", "903654746")
+                                myDataBase.insetUser(user)
+                                userListState.value=myDataBase.getAllUser()
                             },
-                            ) {
-                                Icon(imageVector = Icons.Filled.Add, contentDescription = "add user")
-                            }
-                        },
-                        content = {
-
-                            val context= LocalContext.current
-
-                            GetUsers(userListState.value,context, delete = {item ->
-
-                                myDataBase.deleteUser(item)
-                            },)
-
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Add, contentDescription = "add user"
+                            )
                         }
-                    )
+                    }, content = {
+                        val context = LocalContext.current
+                        val list = ArrayList<User>()
+                        list.addAll(userListState.value)
+                        GetUsers(
+                            list,
+                            context,
+                            delete = { item ->
+                                myDataBase.deleteUser(item)
+                                userListState.value = myDataBase.getAllUser()
+                            },
+                        )
+
+                    })
                 }
             }
         }
