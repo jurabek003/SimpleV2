@@ -2,6 +2,7 @@ package uz.turgunboyevjurabek.simplev2.View.viewScreen
 
 import GetUsers
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -56,10 +57,9 @@ fun MainClass(navController: NavController) {
                 userListState.value = myDataBase.getAllUser()
             },
             onClickNav = {
-                navController.navigate(Screens.EditClass.rout, navArgument("key", builder = { NavArgumentBuilder() }))
+                navController.navigate("edit_class/id=${it.id}?name=${it.name}?lastName=${it.lastName}?number=${it.number}")
             }
         )
     })
-
 
 }

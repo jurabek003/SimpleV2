@@ -3,6 +3,7 @@ package uz.turgunboyevjurabek.simplev2.View.viewScreen
 import android.annotation.SuppressLint
 import android.app.LauncherActivity
 import android.widget.EditText
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.Color.Companion.Magenta
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextLayoutInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -46,15 +48,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import uz.turgunboyevjurabek.simplev2.Model.madels.User
 import uz.turgunboyevjurabek.simplev2.ui.theme.Purple80
 
 @Composable
-fun EditClass(navController: NavController) {
+fun EditClass(navController: NavController,id:Int,name:String,lastName:String,number: String) {
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        EditUi(navController)
+        val context=LocalContext.current
+        val user=User(id, name, lastName, number)
+        EditUi(navController,user)
     }
 
 }
@@ -68,7 +73,7 @@ fun ViewUiPrev() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditUi(navController: NavController) {
+fun EditUi(navController: NavController,user: User) {
     Scaffold(topBar = {
         TopAppBar(colors = topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
@@ -89,25 +94,25 @@ fun EditUi(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             var name by remember {
-                mutableStateOf("")
+                mutableStateOf(user.name)
             }
             var lastName by remember {
-                mutableStateOf("")
+                mutableStateOf(user.lastName)
             }
             var number by remember {
-                mutableStateOf("")
+                mutableStateOf(user.number)
             }
             val gradientColors = listOf(Color.Gray, Blue, Red)
             val brush = Brush.linearGradient(colors = gradientColors)
 
-            OutlinedTextField(value = name,
+            OutlinedTextField(value = name.toString(),
                 onValueChange = { name = it },
                 Modifier.padding(vertical = 10.dp),
                 textStyle = TextStyle(
                     brush = brush, fontSize = 20.sp, fontWeight = FontWeight.SemiBold
                 ),
                 label = { Text(text = "Name") })
-            OutlinedTextField(value = lastName,
+            OutlinedTextField(value = lastName.toString(),
                 onValueChange = { lastName = it },
                 Modifier.padding(vertical = 10.dp),
                 textStyle = TextStyle(
@@ -115,7 +120,7 @@ fun EditUi(navController: NavController) {
                 ),
                 label = { Text(text = "LastName") })
             OutlinedTextField(
-                value = number,
+                value = number.toString(),
                 onValueChange = { number = it },
                 Modifier.padding(vertical = 10.dp),
                 textStyle = TextStyle(
