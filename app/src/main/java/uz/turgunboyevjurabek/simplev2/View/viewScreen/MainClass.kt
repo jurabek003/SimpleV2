@@ -14,7 +14,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavArgumentBuilder
 import androidx.navigation.NavController
+import androidx.navigation.navArgument
 import uz.turgunboyevjurabek.simplev2.Model.db.MyDataBase
 import uz.turgunboyevjurabek.simplev2.Model.madels.User
 import uz.turgunboyevjurabek.simplev2.View.Screens
@@ -54,7 +56,7 @@ fun MainClass(navController: NavController) {
                 userListState.value = myDataBase.getAllUser()
             },
             onClickNav = {
-                navController.navigate(Screens.EditClass.rout)
+                navController.navigate(Screens.EditClass.rout, navArgument("key", builder = { NavArgumentBuilder() }))
             }
         )
     })
