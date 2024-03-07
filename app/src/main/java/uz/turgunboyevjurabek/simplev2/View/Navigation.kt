@@ -42,7 +42,7 @@ fun Navigation() {
             val name = arguments.getString("name")
             val lastName = arguments.getString("lastName")
             val number = arguments.getString("number")
-            val user = User(id, name, lastName, number)
+//            val user = User(id, name, lastName, number)
 
             EditClass(navController = navController,id=id,name= name.toString(),lastName= lastName.toString(),number= number.toString())
         }

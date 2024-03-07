@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import uz.turgunboyevjurabek.simplev2.Model.madels.User
 
 @Dao
@@ -18,5 +19,8 @@ interface MyDao {
 
     @Delete
     fun deleteUser(user: User)
+
+    @Update
+    fun editUser(user: User)
 
 }

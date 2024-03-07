@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,18 +49,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import uz.turgunboyevjurabek.simplev2.Model.db.MyDataBase
 import uz.turgunboyevjurabek.simplev2.Model.madels.User
 import uz.turgunboyevjurabek.simplev2.ui.theme.Purple80
 
 @Composable
-fun EditClass(navController: NavController,id:Int,name:String,lastName:String,number: String) {
+fun EditClass(
+    navController: NavController,
+    id: Int,
+    name: String,
+    lastName: String,
+    number: String,
+) {
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        val context=LocalContext.current
-        val user=User(id, name, lastName, number)
-        EditUi(navController,user)
+        val context = LocalContext.current
+        val user = User(id, name, lastName, number)
+        val myDataBase=MyDataBase.getInstance(context)
+        EditUi(navController, user,myDataBase)
     }
 
 }
@@ -73,7 +82,7 @@ fun ViewUiPrev() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditUi(navController: NavController,user: User) {
+fun EditUi(navController: NavController, user: User,myDataBase: MyDataBase) {
     Scaffold(topBar = {
         TopAppBar(colors = topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
@@ -93,6 +102,7 @@ fun EditUi(navController: NavController,user: User) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val database = myDataBase.roomInstens()
             var name by remember {
                 mutableStateOf(user.name)
             }
@@ -131,6 +141,18 @@ fun EditUi(navController: NavController,user: User) {
                 label = { Text(text = "Number") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
+
+
+            Button(modifier = Modifier
+                .padding(10.dp),
+                onClick = {
+                val user=User(user.id,name, lastName, number)
+                database.editUser(user)
+                navController.popBackStack()
+            }
+            ) {
+                Text(text = "Save", fontWeight = FontWeight.ExtraBold, color = Magenta)
+            }
 
         }
     })
