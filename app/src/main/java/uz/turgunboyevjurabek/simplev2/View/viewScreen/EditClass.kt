@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,6 +44,7 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextLayoutInput
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,8 +69,8 @@ fun EditClass(
     ) {
         val context = LocalContext.current
         val user = User(id, name, lastName, number)
-        val myDataBase=MyDataBase.getInstance(context)
-        EditUi(navController, user,myDataBase)
+        val myDataBase = MyDataBase.getInstance(context)
+        EditUi(navController, user, myDataBase)
     }
 
 }
@@ -82,14 +84,21 @@ fun ViewUiPrev() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditUi(navController: NavController, user: User,myDataBase: MyDataBase) {
+fun EditUi(navController: NavController, user: User, myDataBase: MyDataBase) {
     Scaffold(topBar = {
-        TopAppBar(colors = topAppBarColors(
+        CenterAlignedTopAppBar(colors = topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
             titleContentColor = White,
             actionIconContentColor = White,
             navigationIconContentColor = White
-        ), title = { Text(text = "Edit User") }, navigationIcon = {
+        ), title = {
+            Text(
+                text = "Edit User",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.ExtraBold,
+                fontFamily = FontFamily.Serif
+            )
+        }, navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack, contentDescription = "back",
@@ -146,12 +155,12 @@ fun EditUi(navController: NavController, user: User,myDataBase: MyDataBase) {
             Button(modifier = Modifier
                 .padding(10.dp),
                 onClick = {
-                val user=User(user.id,name, lastName, number)
-                database.editUser(user)
-                navController.popBackStack()
-            }
+                    val user = User(user.id, name, lastName, number)
+                    database.editUser(user)
+                    navController.popBackStack()
+                }
             ) {
-                Text(text = "Save", fontWeight = FontWeight.ExtraBold, color = Magenta)
+                Text(text = "Save", fontWeight = FontWeight.ExtraBold, color = White)
             }
 
         }

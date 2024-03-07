@@ -21,15 +21,20 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,8 +46,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,106 +77,138 @@ fun MainClass(navController: NavController) {
     var showBottomSheet by remember {
         mutableStateOf(false)
     }
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
-    Scaffold(modifier = Modifier.fillMaxSize(), floatingActionButton = {
-        FloatingActionButton(
-            onClick = {
-
-                showBottomSheet = true
-            },
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Add, contentDescription = "add user"
+    Scaffold(modifier = Modifier.fillMaxSize()
+        .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CenterAlignedTopAppBar(
+                colors =TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = Color.White,
+                ),
+                title = {
+                    Text(
+                        text = "Home page",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontFamily = FontFamily.Serif
+                    )
+                },
+                scrollBehavior = scrollBehavior
             )
-        }
-    }) {
-        val context = LocalContext.current
-        val list = ArrayList<User>()
-        list.addAll(userListState.value)
-        GetUsers(list, context, delete = { item ->
-            myDataBase.deleteUser(item)
-            userListState.value = myDataBase.getAllUser()
-        }, onClickNav = {
-            navController.navigate("edit_class/id=${it.id}?name=${it.name}?lastName=${it.lastName}?number=${it.number}")
-        })
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
 
-        if (showBottomSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showBottomSheet = false },
-                sheetState = sheetState,
-                tonalElevation = 20.dp
-
+                    showBottomSheet = true
+                },
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Icon(
+                    imageVector = Icons.Filled.Add, contentDescription = "add user"
+                )
+            }
+        }) {innerPadding->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            val context = LocalContext.current
+            val list = ArrayList<User>()
+            list.addAll(userListState.value)
+            GetUsers(list, context, delete = { item ->
+                myDataBase.deleteUser(item)
+                userListState.value = myDataBase.getAllUser()
+            }, onClickNav = {
+                navController.navigate("edit_class/id=${it.id}?name=${it.name}?lastName=${it.lastName}?number=${it.number}")
+            })
+
+            if (showBottomSheet) {
+                ModalBottomSheet(
+                    onDismissRequest = { showBottomSheet = false },
+                    sheetState = sheetState,
+                    tonalElevation = 20.dp
 
                 ) {
-                    var name by remember {
-                        mutableStateOf("")
-                    }
-                    var lastName by remember {
-                        mutableStateOf("")
-                    }
-                    var number by remember {
-                        mutableStateOf("")
-                    }
-                    val gradientColors = listOf(Color.Gray, Color.Blue, Color.Red)
-                    val brush = Brush.linearGradient(colors = gradientColors)
-
-                    OutlinedTextField(
-                        value = name.toString(),
-                        onValueChange = { name = it },
-                        Modifier.padding(vertical = 10.dp),
-                        textStyle = TextStyle(
-                            brush = brush, fontSize = 20.sp, fontWeight = FontWeight.SemiBold
-                        ),
-                        label = { Text(text = "Name") },
-                        placeholder = { Text(text = "Please enter your name :)") })
-
-                    OutlinedTextField(
-                        value = lastName.toString(),
-                        onValueChange = { lastName = it },
-                        Modifier.padding(vertical = 10.dp),
-                        textStyle = TextStyle(
-                            brush = brush, fontSize = 20.sp, fontWeight = FontWeight.SemiBold
-                        ),
-                        label = { Text(text = "LastName") },
-                        placeholder = { Text(text = "Please enter your lastName :)") })
-
-                    OutlinedTextField(
-                        value = number.toString(),
-                        onValueChange = { number = it },
-                        Modifier.padding(vertical = 10.dp),
-                        textStyle = TextStyle(
-                            brush = brush, fontSize = 20.sp, fontWeight = FontWeight.SemiBold
-                        ),
-                        label = { Text(text = "Number") },
-                        placeholder = { Text(text = "Please enter your Number :)") })
-                    
-                    Spacer(modifier = Modifier.height(40.dp))
-                    OutlinedButton(
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
-                            .height(50.dp),
-                        onClick = {
-                            scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                if (!sheetState.isVisible) {
-                                    showBottomSheet = false
-                                    val user = User(0, name, lastName, number)
-                                    myDataBase.insetUser(user)
-                                    userListState.value = myDataBase.getAllUser()
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+
+                    ) {
+                        var name by remember {
+                            mutableStateOf("")
+                        }
+                        var lastName by remember {
+                            mutableStateOf("")
+                        }
+                        var number by remember {
+                            mutableStateOf("")
+                        }
+                        val gradientColors = listOf(Color.Gray, Color.Blue, Color.Red)
+                        val brush = Brush.linearGradient(colors = gradientColors)
+
+                        OutlinedTextField(
+                            value = name.toString(),
+                            onValueChange = { name = it },
+                            Modifier.padding(vertical = 10.dp),
+                            textStyle = TextStyle(
+                                brush = brush, fontSize = 20.sp, fontWeight = FontWeight.SemiBold
+                            ),
+                            label = { Text(text = "Name") },
+                            placeholder = { Text(text = "Please enter your name :)") })
+
+                        OutlinedTextField(
+                            value = lastName.toString(),
+                            onValueChange = { lastName = it },
+                            Modifier.padding(vertical = 10.dp),
+                            textStyle = TextStyle(
+                                brush = brush, fontSize = 20.sp, fontWeight = FontWeight.SemiBold
+                            ),
+                            label = { Text(text = "LastName") },
+                            placeholder = { Text(text = "Please enter your lastName :)") })
+
+                        OutlinedTextField(
+                            value = number.toString(),
+                            onValueChange = { number = it },
+                            Modifier.padding(vertical = 10.dp),
+                            textStyle = TextStyle(
+                                brush = brush, fontSize = 20.sp, fontWeight = FontWeight.SemiBold
+                            ),
+                            label = { Text(text = "Number") },
+                            placeholder = { Text(text = "Please enter your Number :)") })
+
+                        Spacer(modifier = Modifier.height(40.dp))
+                        OutlinedButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp)
+                                .height(50.dp),
+                            onClick = {
+                                scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                    if (!sheetState.isVisible) {
+                                        showBottomSheet = false
+                                        val user = User(0, name, lastName, number)
+                                        myDataBase.insetUser(user)
+                                        userListState.value = myDataBase.getAllUser()
+                                    }
                                 }
-                            }
-                        }) {
-                            Text(text = "Save item in room and list", color = Color.Unspecified, fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
+                            }) {
+                            Text(
+                                text = "Save item in room and list",
+                                color = Color.Unspecified,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 18.sp
+                            )
+                        }
+
                     }
 
                 }
-
             }
         }
+
     }
 }
